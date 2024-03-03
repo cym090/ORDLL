@@ -1,0 +1,5 @@
+data_dir: /home/cym/workspace/data/dermnet
+whole_class: 23
+close_class: 10
+open_class: ${whole_class} - ${close_class}
+ 

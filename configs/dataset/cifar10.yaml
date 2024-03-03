@@ -1,0 +1,82 @@
+data_dir: /home/cym/workspace/data/cifar10
+whole_class: 10
+# close_class: 6
+known_class: [0, 6, 4, 9, 1, 7]
+# R: 1000
+# norm: 2
+# resize: 32
+crop: 32
+train_datasset:
+  _target_: utils.osr_dataset.CIFAR10_OSR
+  class_list: ${dataset.known_class}
+  dataroot: ${dataset.data_dir}
+  train: True
+  transform:
+    - _target_: torchvision.transforms.Resize
+      size: ${dataset.crop}
+      # interpolation:
+      #   _target_: utils.transforms.interpolation
+      #   _args_:
+      #     - "bicubic"
+    - _target_: torchvision.transforms.RandomCrop
+      size: ${dataset.crop}
+      padding: ${eval:"int(4 / 32 * ${dataset.crop})"}
+    - _target_: torchvision.transforms.RandomHorizontalFlip
+    # - _target_: torchvision.transforms.ColorJitter
+    #   brightness: 0.05
+    #   contrast: 0.05
+    - _target_: torchvision.transforms.ToTensor
+    # - _target_: utils.transforms.normalize_transform
+    #   _args_:
+    #     - ${dataset.norm}
+
+close_test_dataset:
+  _target_: utils.osr_dataset.CIFAR10_OSR
+  class_list: ${dataset.known_class}
+  dataroot: ${dataset.data_dir}
+  train: False
+  transform:
+    - _target_: torchvision.transforms.Resize
+      size: ${dataset.crop}
+      # interpolation:
+      #   _target_: utils.transforms.interpolation
+      #   _args_:
+      #     - "bicubic"
+    # - _target_: torchvision.transforms.RandomCrop
+    #   size: ${dataset.crop}
+    #   padding: ${eval:"int(4 / 32 * ${dataset.crop})"}
+    # - _target_: torchvision.transforms.RandomHorizontalFlip
+    # - _target_: torchvision.transforms.ColorJitter
+    #   brightness: 0.05
+    #   contrast: 0.05
+    - _target_: torchvision.transforms.ToTensor
+    # - _target_: utils.transforms.normalize_transform
+    #   _args_:
+    #     - ${dataset.norm}
+
+open_test_dataset:
+  _target_: utils.osr_dataset.CIFAR10_OSR
+  class_list: ${eval:"set(range(${dataset.whole_class})-set(${dataset.known_class}))"}
+  dataroot: ${dataset.data_dir}
+  train: False
+  transform:
+    - _target_: torchvision.transforms.Resize
+      size: ${dataset.crop}
+      # interpolation:
+      #   _target_: utils.transforms.interpolation
+      #   _args_:
+      #     - "bicubic"
+    # - _target_: torchvision.transforms.RandomCrop
+    #   size: ${dataset.crop}
+    #   padding: ${eval:"int(4 / 32 * ${dataset.crop})"}
+    # - _target_: torchvision.transforms.RandomHorizontalFlip
+    # - _target_: torchvision.transforms.ColorJitter
+    #   brightness: 0.05
+    #   contrast: 0.05
+    - _target_: torchvision.transforms.ToTensor
+    # - _target_: utils.transforms.normalize_transform
+    #   _args_:
+    #     - ${dataset.norm}
+
+
+
