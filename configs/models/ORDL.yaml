@@ -1,0 +1,18 @@
+# @package _global_
+defaults:
+  - _self_
+alpha: 0.5
+beta: 0.5
+model:
+  _target_: models.arch.ORDL.ORDL
+  backbone: ${backbone}
+
+trainer:
+  _target_: trainers.ORDL.OrdlTrainer
+
+criterion:
+  _target_: models.loss.ORDL.OrdlLoss
+  alpha: ${alpha}
+  beta: ${beta}
+  num_classes: ${eval:"len(${dataset.known_class})"}
+  feat_dim: 512

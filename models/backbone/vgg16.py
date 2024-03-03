@@ -6,7 +6,7 @@ from models.backbone.base import BaseNet
 
 
 class VGG16(BaseNet):
-    def __init__(self, pretrained=True, remove_dropout=True, **kwargs):
+    def __init__(self, pretrained=False, remove_dropout=True, **kwargs):
         super(VGG16, self).__init__()
 
         model = vgg16(pretrained=pretrained)

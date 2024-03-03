@@ -1,3 +1,0 @@
-_target_: models.backbone.resnet50.ResNet50
-pretrained: True
-set_eval_mode: True

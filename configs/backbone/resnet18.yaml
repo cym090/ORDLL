@@ -1,0 +1,2 @@
+_target_: models.backbone.resnet.ResNet18
+num_c: ${eval:"len($dataset.known_class)"}

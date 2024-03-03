@@ -212,8 +212,9 @@ class ResNet(nn.Module):
         y = self.linear(out)
         return y, penultimate
     
-def ResNet18(num_c):
-    return ResNet(PreActBlock, [2,2,2,2], num_classes=num_c)
+class ResNet18(ResNet):
+    def __init__(self, num_c):
+        super(ResNet, self).__init__(PreActBlock, [2,2,2,2], num_classes=num_c)
 
 def ResNet34(num_c):
     return ResNet(BasicBlock, [3,4,6,3], num_classes=num_c)

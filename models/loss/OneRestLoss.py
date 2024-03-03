@@ -1,29 +1,26 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from models.loss.Dist import Dist
+from loss.Dist import Dist
 import pandas as pd
 import numpy as np
-# from scipy import stats
 
-
-# class OneRestLoss_arpl(nn.Module):
-class OrdlLoss(nn.Module):
+class OneRestLoss(nn.Module):
     def __init__(self,**options):
         super().__init__()
-        self.Dist = Dist(num_classes=options['num_classes']+1, feat_dim=options['feat_dim'])
+        self.Dist = Dist(num_classes=options['num_classes']+1, feat_dim=options['feat_dim']).cuda()
         self.points = self.Dist.centers#归一化中心
         self.a = options['alpha']
         self.b = options['beta']
         self.radius1 = nn.Parameter(torch.tensor([1.0]))
-        self.radius2 = nn.Parameter(torch.tensor([0.0])) # 径r是待优化参数
+        self.radius2 = nn.Parameter(torch.tensor([0.0]))#径r是待优化参数
         self.k_margin_loss = nn.MarginRankingLoss(margin=1)
         self.u_margin_loss = nn.MarginRankingLoss(margin=1)
 
     def forward(self,x,y,labels=None):
 
         loss = 0.0
-        batch_size = x.size(0)
+        batch_size = x.size(0) #batch_size
 
         dist_dot_p = self.Dist(x, center=self.points, metric='dot')# (batch_size,num_classes+1)
         dist_l2_p = self.Dist(x, center=self.points)  # (batch_size,num_classes+1)
@@ -37,6 +34,7 @@ class OrdlLoss(nn.Module):
 
             cla_loss = 0.0
             ge_loss = 0.0
+            
             one_hot_labels = pd.get_dummies(labels.cpu().numpy())
             num_class = len(one_hot_labels.columns)
             for class_label in one_hot_labels.columns:
@@ -49,12 +47,13 @@ class OrdlLoss(nn.Module):
                 k_u_dist = dist_l2_p[:, -1][one_hot.bool()]#当前闭集类到开集中心的距离
                 k_k_target = torch.ones(k_k_dist.size(0)).cuda()
                 u_u_target = torch.ones(u_u_dist.size(0)).cuda()
+                
                 open_risk = self.u_margin_loss(self.radius1,u_u_dist,u_u_target)
                 k_margin_loss = self.k_margin_loss(self.radius2, k_k_dist, k_k_target) + self.k_margin_loss(self.radius2,
                                                                                                             u_k_dist,
                                                                                                             -u_u_target)  
-                ge_loss += open_risk
+
+                ge_loss += ((1-self.a)*open_risk + self.a*k_margin_loss)
             loss = (1-self.b)*cla_loss + self.b*ge_loss
-            
 
         return logits, loss

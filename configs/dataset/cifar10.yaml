@@ -1,15 +1,16 @@
-data_dir: /home/cym/workspace/data/cifar10
+data_dir: /home/cym/workspace/data/
 whole_class: 10
 # close_class: 6
 known_class: [0, 6, 4, 9, 1, 7]
+unknown_class: ${eval:"list(set(range(${dataset.whole_class}))-set(${dataset.known_class}))"}
 # R: 1000
 # norm: 2
 # resize: 32
 crop: 32
-train_datasset:
+train_dataset:
   _target_: utils.osr_dataset.CIFAR10_OSR
   class_list: ${dataset.known_class}
-  dataroot: ${dataset.data_dir}
+  data_dir: ${dataset.data_dir}
   train: True
   transform:
     - _target_: torchvision.transforms.Resize
@@ -33,7 +34,7 @@ train_datasset:
 close_test_dataset:
   _target_: utils.osr_dataset.CIFAR10_OSR
   class_list: ${dataset.known_class}
-  dataroot: ${dataset.data_dir}
+  data_dir: ${dataset.data_dir}
   train: False
   transform:
     - _target_: torchvision.transforms.Resize
@@ -56,8 +57,8 @@ close_test_dataset:
 
 open_test_dataset:
   _target_: utils.osr_dataset.CIFAR10_OSR
-  class_list: ${eval:"set(range(${dataset.whole_class})-set(${dataset.known_class}))"}
-  dataroot: ${dataset.data_dir}
+  class_list: ${dataset.unknown_class}
+  data_dir: ${dataset.data_dir}
   train: False
   transform:
     - _target_: torchvision.transforms.Resize

@@ -19,9 +19,9 @@ class CIFAR10_Filter(CIFAR10):
         self.data, self.targets = np.squeeze(np.take(datas, mask, axis=0)), np.array(new_targets)
 
 class CIFAR10_OSR(object):
-    def __init__(self, class_list, dataroot='./data/cifar10', train=True, transform=None,):
+    def __init__(self, class_list, data_dir='./data/cifar10', train=True, transform=None,):
     # def __init__(self, class_list, dataroot='./data/cifar10', train=True, transform=None, use_gpu=True, num_workers=8, batch_size=128, img_size=32):
-        self.dir = dataroot
+        self.dir = data_dir
         self.class_num_ = len(class_list)
         self.class_list = class_list
         self.train = train
@@ -45,7 +45,7 @@ class CIFAR10_OSR(object):
 
         # pin_memory = True if use_gpu else False
 
-        self.data = CIFAR10_Filter(root=self.dataroot, train=True, download=True, transform=self.transform)
+        self.data = CIFAR10_Filter(root=self.dir, train=True, download=True, transform=self.transform)
         # print('All Train Data:', len(data))
         self.data.__Filter__(class_list=self.class_list)
         
