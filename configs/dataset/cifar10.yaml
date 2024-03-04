@@ -5,7 +5,7 @@ known_class: [0, 6, 4, 9, 1, 7]
 unknown_class: ${eval:"list(set(range(${dataset.whole_class}))-set(${dataset.known_class}))"}
 # R: 1000
 # norm: 2
-# resize: 32
+resize: 32
 crop: 32
 train_dataset:
   _target_: utils.osr_dataset.CIFAR10_OSR
@@ -39,21 +39,7 @@ close_test_dataset:
   transform:
     - _target_: torchvision.transforms.Resize
       size: ${dataset.crop}
-      # interpolation:
-      #   _target_: utils.transforms.interpolation
-      #   _args_:
-      #     - "bicubic"
-    # - _target_: torchvision.transforms.RandomCrop
-    #   size: ${dataset.crop}
-    #   padding: ${eval:"int(4 / 32 * ${dataset.crop})"}
-    # - _target_: torchvision.transforms.RandomHorizontalFlip
-    # - _target_: torchvision.transforms.ColorJitter
-    #   brightness: 0.05
-    #   contrast: 0.05
     - _target_: torchvision.transforms.ToTensor
-    # - _target_: utils.transforms.normalize_transform
-    #   _args_:
-    #     - ${dataset.norm}
 
 open_test_dataset:
   _target_: utils.osr_dataset.CIFAR10_OSR
@@ -63,21 +49,7 @@ open_test_dataset:
   transform:
     - _target_: torchvision.transforms.Resize
       size: ${dataset.crop}
-      # interpolation:
-      #   _target_: utils.transforms.interpolation
-      #   _args_:
-      #     - "bicubic"
-    # - _target_: torchvision.transforms.RandomCrop
-    #   size: ${dataset.crop}
-    #   padding: ${eval:"int(4 / 32 * ${dataset.crop})"}
-    # - _target_: torchvision.transforms.RandomHorizontalFlip
-    # - _target_: torchvision.transforms.ColorJitter
-    #   brightness: 0.05
-    #   contrast: 0.05
     - _target_: torchvision.transforms.ToTensor
-    # - _target_: utils.transforms.normalize_transform
-    #   _args_:
-    #     - ${dataset.norm}
 
 
 

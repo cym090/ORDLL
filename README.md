@@ -1,5 +1,5 @@
 # Open Set Recognition Model -- ORDL
-This is resposition of Open Set Recognition Model ORDL 
+This is resposition of Open Set Recognition Model --- ORDL 
 
 
 1. How to train

@@ -8,16 +8,16 @@ import numpy as np
 class OneRestLoss(nn.Module):
     def __init__(self,**options):
         super().__init__()
-        self.Dist = Dist(num_classes=options['num_classes']+1, feat_dim=options['feat_dim']).cuda()
-        self.points = self.Dist.centers#归一化中心
+        # self.Dist = Dist(num_classes=options['num_classes']+1, feat_dim=options['feat_dim']).cuda()
+        # self.points = self.Dist.centers#归一化中心
         self.a = options['alpha']
         self.b = options['beta']
-        self.radius1 = nn.Parameter(torch.tensor([1.0]))
-        self.radius2 = nn.Parameter(torch.tensor([0.0]))#径r是待优化参数
+        # self.radius1 = nn.Parameter(torch.tensor([1.0]))
+        # self.radius2 = nn.Parameter(torch.tensor([0.0]))#径r是待优化参数
         self.k_margin_loss = nn.MarginRankingLoss(margin=1)
         self.u_margin_loss = nn.MarginRankingLoss(margin=1)
 
-    def forward(self,x,y,labels=None):
+    def forward(self, x,y,labels=None):
 
         loss = 0.0
         batch_size = x.size(0) #batch_size

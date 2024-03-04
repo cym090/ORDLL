@@ -1,13 +1,29 @@
 defaults:
   - _self_
-  - /dataset: cifar10
-  - /backbone: vgg16
+  # - /dataset: cifar10
+  - /dataset: Dermnet_Skin_Disease
+  - /backbone: resnet18_224
   - /models: ORDL
   - /optim: adam
   - /scheduler: step
 
 dataset_name: ${hydra:runtime.choices.dataset}
 
-train_bs: 64
-test_bs: 64
+open_test: True
+train_bs: 512
+test_bs: 512
 epochs: 100
+neval: 1
+indicator: AUROC
+
+tag: ""
+seed: 3096
+work_dir: ${hydra:runtime.cwd}
+# data_dir: ${work_dir}
+hydra:
+  run:
+    dir: ${work_dir}/logs/${hydra:runtime.choices.dataset}/${hydra:runtime.choices.models}_${epochs}/${tag}${seed}_${now:%y%m%d_%H%M%S_%f}
+  job:
+    chdir: False
+
+logdir: ${hydra:run.dir}

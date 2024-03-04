@@ -1,6 +1,6 @@
 import logging
 import sys
-
+import json
 # import wandb
 
 cache = {}
@@ -24,7 +24,21 @@ def setup_logging_stream_only():
                         format='%(levelname)s %(asctime)s: %(message)s',
                         datefmt='%d-%m-%y %H:%M:%S')
 
+def record_history(stage, stats, logdir):
+        train_history = []
+        test_history = []
+        if stage == 'train':
+            history = train_history
+        else:
+            history = test_history
 
+        # if self.wandb:
+        #     wandb_log({f'{stage}/{k}': v for k, v in stats.items()})
+
+        history.append(stats)
+        json.dump(history,
+                  open(f'{logdir}/{stage}_history.json', 'w+'),
+                  indent=True)
 # def wandb_log(data):
 #     global cache
 #     cache.update(data)

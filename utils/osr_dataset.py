@@ -6,6 +6,10 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torchvision.datasets import MNIST, CIFAR10, CIFAR100, SVHN
 from omegaconf import ListConfig
+from torchvision.datasets import ImageFolder
+from torch.utils.data import Dataset
+
+
 class CIFAR10_Filter(CIFAR10):
     """CIFAR10 Dataset.
     """
@@ -79,4 +83,35 @@ class CIFAR10_OSR(object):
     
     def __len__(self):
         return len(self.data)
-            
+
+class CustomDataset(Dataset):#需要继承data.Dataset
+    def __init__(self, class_list, data_dir, train=True, transform=None):
+        # self.dir = file_path
+        # data, targets = self.make_dataset_from_folder(file_path)
+        # self.data, self.targets = data, targets
+        if train == True:
+            self.dataset = ImageFolder(f"{data_dir}/train", transform=transform)
+        else:
+            self.dataset = ImageFolder(f"{data_dir}/test", transform=transform)
+        self.class_num_ = len(class_list)
+        self.class_list = class_list
+        self.__Filter__(class_list)
+
+    def __getitem__(self, index):
+        return self.dataset[index]
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __Filter__(self, class_list):
+        datas, targets = np.array(self.data), np.array(self.targets)
+        mask, new_targets = [], []
+        for i in range(len(targets)):
+            if targets[i] in class_list:
+                mask.append(i)
+                new_targets.append(class_list.index(targets[i]))
+        self.data, self.targets = np.squeeze(np.take(datas, mask, axis=0)), np.array(new_targets)
+    
+    def make_dataset_from_folder(file_path):
+        dataset = ImageFolder(file_path)
+        return dataset.data, dataset.targets
