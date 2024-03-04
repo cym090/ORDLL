@@ -1,4 +1,5 @@
 data_dir: /home/cym/workspace/data/dermnet
+
 whole_class: 23
 close_class: 20
 known_class: ${eval:"list(range(${dataset.close_class}))"}
@@ -8,17 +9,18 @@ crop: 224
 
 train_dataset:
   _target_: utils.osr_dataset.CustomDataset
-  class_list: ${dataset.known_class}
+  # class_list: ${dataset.known_class}
   data_dir: ${dataset.data_dir}
+  mode: train
   transform:
     - _target_: torchvision.transforms.Resize
-      size: ${dataset.crop}
+      size: ${eval:"(${dataset.crop},${dataset.crop})"}
       # interpolation:
       #   _target_: utils.transforms.interpolation
       #   _args_:
       #     - "bicubic"
     - _target_: torchvision.transforms.RandomCrop
-      size: ${dataset.crop}
+      size: ${eval:"(${dataset.crop},${dataset.crop})"}
       padding: ${eval:"int(4 / 32 * ${dataset.crop})"}
     - _target_: torchvision.transforms.RandomHorizontalFlip
     # - _target_: torchvision.transforms.ColorJitter
@@ -31,21 +33,29 @@ train_dataset:
 
 close_test_dataset:
   _target_: utils.osr_dataset.CustomDataset
-  class_list: ${dataset.known_class}
+  # class_list: ${dataset.known_class}
   data_dir: ${dataset.data_dir}
-  train: False
+  mode: test
   transform:
     - _target_: torchvision.transforms.Resize
-      size: ${dataset.crop}
+      size: ${eval:"(${dataset.crop},${dataset.crop})"}
+      interpolation:
+        _target_: utils.transforms.interpolation
+        _args_:
+          - "bicubic"
     - _target_: torchvision.transforms.ToTensor
 
 open_test_dataset:
   _target_: utils.osr_dataset.CustomDataset
-  class_list: ${dataset.unknown_class}
+  # class_list: ${dataset.unknown_class}
   data_dir: ${dataset.data_dir}
-  train: False
+  mode: open
   transform:
     - _target_: torchvision.transforms.Resize
-      size: ${dataset.crop}
+      size: ${eval:"(${dataset.crop},${dataset.crop})"}
+      # interpolation:
+      #   _target_: utils.transforms.interpolation
+      #   _args_:
+      #     - "bicubic"
     - _target_: torchvision.transforms.ToTensor
 

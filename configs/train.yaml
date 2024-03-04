@@ -1,8 +1,9 @@
 defaults:
   - _self_
-  # - /dataset: cifar10
-  - /dataset: Dermnet_Skin_Disease
-  - /backbone: resnet18_224
+  - /dataset: cifar10
+  # - /dataset: Dermnet_Skin_Disease
+  # - /backbone: resnet18_224
+  - /backbone: resnet18_32
   - /models: ORDL
   - /optim: adam
   - /scheduler: step
@@ -10,10 +11,10 @@ defaults:
 dataset_name: ${hydra:runtime.choices.dataset}
 
 open_test: True
-train_bs: 512
-test_bs: 512
+train_bs: 64
+test_bs: 64
 epochs: 100
-neval: 1
+neval: 5
 indicator: AUROC
 
 tag: ""

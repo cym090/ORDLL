@@ -2,11 +2,11 @@ import torch.nn as nn
 
 class BaseNet(nn.Module):
     def __init__(self,
-                 backbone: nn.Module,
+                #  backbone: nn.Module,
                  **kwargs):
         super().__init__()
 
-        self.backbone = backbone
+        # self.fc = backbone
 
     def count_parameters(self, mode='trainable'):
         if mode == 'trainable':

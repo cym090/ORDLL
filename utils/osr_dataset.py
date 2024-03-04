@@ -85,23 +85,24 @@ class CIFAR10_OSR(object):
         return len(self.data)
 
 class CustomDataset(Dataset):#需要继承data.Dataset
-    def __init__(self, class_list, data_dir, train=True, transform=None):
+    # def __init__(self, class_list, data_dir, train=True, transform=None):
+    def __init__(self, data_dir, mode="train", transform=None):
+        if isinstance(transform, (list, ListConfig)):
+            transform = transforms.Compose(transform)
+        self.transform = transform
         # self.dir = file_path
         # data, targets = self.make_dataset_from_folder(file_path)
         # self.data, self.targets = data, targets
-        if train == True:
-            self.dataset = ImageFolder(f"{data_dir}/train", transform=transform)
-        else:
-            self.dataset = ImageFolder(f"{data_dir}/test", transform=transform)
-        self.class_num_ = len(class_list)
-        self.class_list = class_list
-        self.__Filter__(class_list)
+        self.dataset = ImageFolder(f"{data_dir}/{mode}", transform=transform)
+        # self.class_num_ = len(class_list)
+        # self.class_list = class_list
+        # self.__Filter__(class_list)
 
     def __getitem__(self, index):
         return self.dataset[index]
     
     def __len__(self):
-        return len(self.data)
+        return len(self.dataset)
     
     def __Filter__(self, class_list):
         datas, targets = np.array(self.data), np.array(self.targets)

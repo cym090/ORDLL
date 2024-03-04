@@ -9,6 +9,7 @@ from sklearn.metrics import f1_score
 from utils import metrics
 from utils.metrics import close_f1
 import logging
+from tqdm import tqdm
 def test(model, criterion, testloader, outloader, config):
     '''
     correct:闭集预测真确数
@@ -25,54 +26,57 @@ def test(model, criterion, testloader, outloader, config):
     open_u_pred = []
     
     with torch.no_grad():
-        for data, labels in testloader:#闭集分类
-            if torch.cuda.is_available():
-                data, labels = data.cuda(), labels.cuda()
-            
-            with torch.set_grad_enabled(False):
-                feat = model(data)
-                # y = net.center
-                logits, _ = criterion(feat, model.centers, model.radius1, model.radius2, labels) #(batch_size,num_classes)
-                total += labels.size(0)
-                close_labels.append(labels.data.cpu().numpy())
-                all_labels.append(labels.data.cpu().numpy())
+        with tqdm(testloader, bar_format='{l_bar}{bar:10}{r_bar}') as tepoch:
+            for i, batch in enumerate(tepoch):#闭集分类
+                data, labels = batch
+                if torch.cuda.is_available():
+                    data, labels = data.cuda(), labels.cuda()
                 
-                if config['open_test'] == True:
-                    close_pred = logits[:,:-1].data.max(1)[1]
-                    open_pred = logits.data.max(1)[1]
+                with torch.set_grad_enabled(False):
+                    feat = model(data)
+                    # y = net.center
+                    logits, _ = criterion(feat, model.centers, model.radius1, model.radius2, labels) #(batch_size,num_classes)
+                    total += labels.size(0)
+                    close_labels.append(labels.data.cpu().numpy())
+                    all_labels.append(labels.data.cpu().numpy())
                     
-                    close_k_pred.append(close_pred.data.cpu().numpy())
-                    open_k_pred.append(open_pred.data.cpu().numpy())
-                    
-                    close_k_logits.append(logits[:,:-1].data.cpu().numpy())
-                    open_k_logits.append(logits.data.cpu().numpy())
+                    if config['open_test'] == True:
+                        close_pred = logits[:,:-1].data.max(1)[1]
+                        open_pred = logits.data.max(1)[1]
                         
-                    close_correct += (close_pred == labels.data).sum()
-                    open_correct += (open_pred == labels.data).sum()
+                        close_k_pred.append(close_pred.data.cpu().numpy())
+                        open_k_pred.append(open_pred.data.cpu().numpy())
+                        
+                        close_k_logits.append(logits[:,:-1].data.cpu().numpy())
+                        open_k_logits.append(logits.data.cpu().numpy())
+                            
+                        close_correct += (close_pred == labels.data).sum()
+                        open_correct += (open_pred == labels.data).sum()
+                        
+                    else:
+                        pred = logits.data.max(1)[1]
+                        close_k_pred.append(pred.data.cpu().numpy())
+                        close_k_logits.append(logits.data.cpu().numpy())
+                        close_correct += (pred == labels.data).sum()
                     
-                else:
-                    pred = logits.data.max(1)[1]
-                    close_k_pred.append(pred.data.cpu().numpy())
-                    close_k_logits.append(logits.data.cpu().numpy())
-                    close_correct += (pred == labels.data).sum()
-                    
-        for batch_idx, (data, labels) in enumerate(outloader):#unkonwn dection
-            if torch.cuda.is_available():
-                data, labels = data.cuda(), labels.cuda()
-            
-            with torch.set_grad_enabled(False):
-                feat = model(data,)
-                logits = criterion(feat, model.centers, model.radius1, model.radius2)
-                dummy_labels = np.full((feat.size(0)),len(config.dataset.known_class))
-                all_labels.append(dummy_labels)
-                if config['open_test'] == True:
-                    pred = logits.data.max(1)[1]
-                    open_u_pred.append(pred.data.cpu().numpy())
-                    close_u_logits.append(logits[:,:-1].data.cpu().numpy())
-                    open_u_logits.append(logits.data.cpu().numpy())
-                else:
-                    # pred = logits.data.max(1)[1]
-                    close_u_logits.append(logits.data.cpu().numpy())
+        with tqdm(outloader, bar_format='{l_bar}{bar:10}{r_bar}') as tepoch:#unkonwn dection
+            for i, batch in enumerate(tepoch):
+                if torch.cuda.is_available():
+                    data, labels = data.cuda(), labels.cuda()
+                
+                with torch.set_grad_enabled(False):
+                    feat = model(data,)
+                    logits = criterion(feat, model.centers, model.radius1, model.radius2)
+                    dummy_labels = np.full((feat.size(0)),len(config.dataset.known_class))
+                    all_labels.append(dummy_labels)
+                    if config['open_test'] == True:
+                        pred = logits.data.max(1)[1]
+                        open_u_pred.append(pred.data.cpu().numpy())
+                        close_u_logits.append(logits[:,:-1].data.cpu().numpy())
+                        open_u_logits.append(logits.data.cpu().numpy())
+                    else:
+                        # pred = logits.data.max(1)[1]
+                        close_u_logits.append(logits.data.cpu().numpy())
     # Accuracy
     if config['open_test'] == True:
         close_acc = float(close_correct) * 100. / float(total)

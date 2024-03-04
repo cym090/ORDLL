@@ -5,9 +5,9 @@ from models.backbone.base import BaseNet
 
 
 class ResNet18_224(BaseNet):
-    def __init__(self, pretrained=True, **kwargs):
+    def __init__(self, **kwargs):
         super(ResNet18_224, self).__init__()
-        model = resnet18(pretrained=pretrained)
+        model = resnet18()
 
         # self.set_eval_mode = set_eval_mode
         self.features = nn.Sequential(

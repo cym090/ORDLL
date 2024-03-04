@@ -26,9 +26,9 @@ def main(config: DictConfig):
     train_data = hydra.utils.instantiate(config.dataset.train_dataset)
     close_test_data = hydra.utils.instantiate(config.dataset.close_test_dataset)
     open_test_data = hydra.utils.instantiate(config.dataset.open_test_dataset)
-    trainloader = DataLoader(train_data, config.train_bs, shuffle=True, num_workers=os.cpu_count()//2, pin_memory=True)
-    close_testloader = DataLoader(close_test_data, config.test_bs, num_workers=os.cpu_count()//2)
-    open_testloader = DataLoader(open_test_data, config.test_bs, num_workers=os.cpu_count()//2)
+    trainloader = DataLoader(train_data, config.train_bs, shuffle=True, num_workers=os.cpu_count()//4, pin_memory=True)
+    close_testloader = DataLoader(close_test_data, config.test_bs, num_workers=os.cpu_count()//4)
+    open_testloader = DataLoader(open_test_data, config.test_bs, num_workers=os.cpu_count()//4)
 
     # 加载model
     logging.info(f'Load Model...')

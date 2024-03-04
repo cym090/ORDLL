@@ -9,11 +9,11 @@ class ORDL(BaseNet):
                  backbone: nn.Module,
                  init='random',
                  **kwargs):
-        super().__init__(backbone, **kwargs)
+        super().__init__(**kwargs)
         self.feat_dim = kwargs['feat_dim']
         self.num_classes = kwargs['num_classes']+1
         self.num_centers = kwargs['num_centers']
-        self.fc = self.backbone
+        self.fc = backbone
         self.Dist = Dist(num_classes=kwargs['num_classes']+1, feat_dim=kwargs['feat_dim'])
         # self.points = self.Dist.centers
         self.radius1 = nn.Parameter(torch.tensor([1.0]))
@@ -30,6 +30,6 @@ class ORDL(BaseNet):
         # return {'fc': self.fc,'centers':self.centers}
 
     def forward(self, x):
-        x = self.backbone(x)
+        x = self.fc(x)
         # return x, self.centers, self.radius1, self.radius2
         return x        
