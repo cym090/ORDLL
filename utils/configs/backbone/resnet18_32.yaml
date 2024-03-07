@@ -1,0 +1,4 @@
+feat_dim: 512
+backbone:
+  _target_: models.backbone.resnet18_32.ResNet18_32
+  num_classes: ${eval:"len(${dataset.known_class})"}

@@ -26,9 +26,9 @@ def main(config: DictConfig):
     train_data = hydra.utils.instantiate(config.dataset.train_dataset)
     close_test_data = hydra.utils.instantiate(config.dataset.close_test_dataset)
     open_test_data = hydra.utils.instantiate(config.dataset.open_test_dataset)
-    trainloader = DataLoader(train_data, config.train_bs, shuffle=True, num_workers=os.cpu_count()//4, pin_memory=True)
-    close_testloader = DataLoader(close_test_data, config.test_bs, num_workers=os.cpu_count()//4)
-    open_testloader = DataLoader(open_test_data, config.test_bs, num_workers=os.cpu_count()//4)
+    trainloader = DataLoader(train_data, config.train_bs, shuffle=True, num_workers=os.cpu_count(), pin_memory=True, persistent_workers)
+    close_testloader = DataLoader(close_test_data, config.test_bs, num_workers=os.cpu_count())
+    open_testloader = DataLoader(open_test_data, config.test_bs, num_workers=os.cpu_count())
 
     # 加载model
     logging.info(f'Load Model...')
@@ -57,13 +57,15 @@ def main(config: DictConfig):
     for epoch in range(1, config.epochs+1):
         res = {'ep': epoch + 1}
         train_meters = defaultdict(AverageMeter)
-        logging.info(f'Epoch [{epoch}/{config.epochs}];')  # 
+        lr = optimizer.state_dict()['param_groups'][0]['lr']
+        logging.info(f'Epoch [{epoch}/{config.epochs}];lr:{lr:.6}')  # 
         with tqdm(trainloader, bar_format='{l_bar}{bar:10}{r_bar}') as tepoch:
             for i, batch in enumerate(tepoch):
                 trainer.train_one_batch(model, batch, criterion, optimizer, scheduler, device, train_meters)
                 tepoch.set_postfix({k: v.avg for k, v in train_meters.items()})
         for key in train_meters: res['train_' + key] = train_meters[key].avg
         record_history('train', res, config.logdir)
+        scheduler.step()
 
         # 定期评估
         eval_now = (epoch == config.epochs + 1) or (config.neval != 0 and epoch % config.neval == 0)
