@@ -18,7 +18,7 @@ from utils.engine import seeding
 @hydra.main(config_path="configs/", config_name="train.yaml", version_base=None)
 def main(config: DictConfig):
     seeding(config.seed)
-    setup_logging(config.logdir + '/log.log')
+    setup_logging(config.logdir + '/train.log')
     io.init_save_queue()
     # print_stats()
     # 加载数据
@@ -55,7 +55,7 @@ def main(config: DictConfig):
     criterion = criterion.to(device)
     start_time = time.time()
     for epoch in range(1, config.epochs+1):
-        res = {'ep': epoch + 1}
+        res = {'ep': epoch}
         train_meters = defaultdict(AverageMeter)
         lr = optimizer.state_dict()['param_groups'][0]['lr']
         logging.info(f'Epoch [{epoch}/{config.epochs}];lr:{lr:.6}')  # 
@@ -71,6 +71,7 @@ def main(config: DictConfig):
         eval_now = (epoch == config.epochs + 1) or (config.neval != 0 and epoch % config.neval == 0)
         if eval_now:
             results = test(model, criterion, close_testloader, open_testloader, config)
+            record_history('test', {f"ep{epoch}":results}, config.logdir)
             if config['open_test'] == True:
                 open_results = results['open_out_metric']
                 logging.info("Close AUROC (%): {:.3f}\t Open AUROC (%): {:.3f}\t OSCR (%): {:.3f}\t".format(results['AUROC'],open_results['AUROC'], results['close_oscr']))
@@ -92,9 +93,9 @@ def main(config: DictConfig):
                 model_path = f'{config.logdir}/models'
                 os.makedirs(model_path, exist_ok=True)
                 # trainer.save_model_state(model, model_path)
-                torch.save(model.state_dict(), f"{model_path}/ep{epoch + 1}.pth")
+                torch.save(model.state_dict(), f"{model_path}/ep{epoch}.pth")
                 # save_networks(net, model_path, file_name, criterion=criterion)
-    logging.info(f"End Training.Time:{time.time()-start_time:.2}s")
+    logging.info(f"End Training.Time:{time.time()-start_time:.2f}s")
     logging.info(f"Logging into {config.logdir}")
 # 加载评估器
 

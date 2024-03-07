@@ -1,5 +1,5 @@
 import logging
-import sys
+import os, sys
 import json
 # import wandb
 
@@ -36,9 +36,27 @@ def record_history(stage, stats, logdir):
         #     wandb_log({f'{stage}/{k}': v for k, v in stats.items()})
 
         history.append(stats)
-        json.dump(history,
-                  open(f'{logdir}/{stage}_history.json', 'w+'),
-                  indent=True)
+        # 如果JSON文件不存在，则创建新文件
+        filename = f'{logdir}/{stage}_history.json'
+        if not os.path.exists(filename):
+            with open(filename, 'w') as f:
+                json.dump(history, f)
+        else:
+            # 读取已有的JSON数据
+            with open(filename, 'r') as f:
+                existing_data = json.load(f)
+            
+            # 合并新的字典数据
+            existing_data.append(history[0])
+            
+            # 写入合并后的数据到JSON文件
+            with open(filename, 'w') as f:
+                json.dump(existing_data, f)
+        # with open(f'{logdir}/{stage}_history.json','w') as json_file:
+        #      json.dump(old_data,json_file)
+        # json.dump(history,
+        #           open(f'{logdir}/{stage}_history.json', 'a+'),
+        #           indent=True)
 # def wandb_log(data):
 #     global cache
 #     cache.update(data)
