@@ -5,7 +5,7 @@ defaults:
   # - /backbone: resnet18_224
   - /backbone: resnet18_32
   - /models: ORDL
-  - /optim: adam
+  - /optim: sgd
   - /scheduler: step
 
 dataset_name: ${hydra:runtime.choices.dataset}
@@ -14,7 +14,7 @@ open_test: True
 train_bs: 64
 test_bs: 64
 epochs: 100
-neval: 5
+neval: 2
 indicator: AUROC
 
 tag: ""

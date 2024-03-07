@@ -1,8 +1,8 @@
 # @package _global_
 defaults:
   - _self_
-alpha: 0.5
-beta: 0.5
+alpha: 0.1
+beta: 0.2
 num_centers: 1
 model:
   _target_: models.arch.ORDL.ORDL

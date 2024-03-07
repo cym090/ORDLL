@@ -15,7 +15,7 @@ class CIFAR10_Filter(CIFAR10):
     """
     def __Filter__(self, class_list):
         datas, targets = np.array(self.data), np.array(self.targets)
-        mask, new_targets = [], []
+        mask, new_targets = [], [] #mask筛选的数据索引， new_targets重新命名类别
         for i in range(len(targets)):
             if targets[i] in class_list:
                 mask.append(i)
@@ -49,7 +49,7 @@ class CIFAR10_OSR(object):
 
         # pin_memory = True if use_gpu else False
 
-        self.data = CIFAR10_Filter(root=self.dir, train=True, download=True, transform=self.transform)
+        self.data = CIFAR10_Filter(root=self.dir, train=self.train, download=True, transform=self.transform)
         # print('All Train Data:', len(data))
         self.data.__Filter__(class_list=self.class_list)
         
