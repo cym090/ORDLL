@@ -13,7 +13,7 @@ defaults:
 dataset_name: ${hydra:runtime.choices.dataset}
 
 open_test: True
-train_bs: 64
+train_bs: 32
 test_bs: 64
 epochs: 100
 neval: 10

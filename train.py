@@ -26,9 +26,9 @@ def main(config: DictConfig):
     train_data = hydra.utils.instantiate(config.dataset.train_dataset)
     close_test_data = hydra.utils.instantiate(config.dataset.close_test_dataset)
     open_test_data = hydra.utils.instantiate(config.dataset.open_test_dataset)
-    trainloader = DataLoader(train_data, config.train_bs, shuffle=True, num_workers=os.cpu_count(), pin_memory=True, persistent_workers=True)
-    close_testloader = DataLoader(close_test_data, config.test_bs, num_workers=os.cpu_count())
-    open_testloader = DataLoader(open_test_data, config.test_bs, num_workers=os.cpu_count())
+    trainloader = DataLoader(train_data, config.train_bs, shuffle=True, num_workers=os.cpu_count()//2, pin_memory=True, persistent_workers=True)
+    close_testloader = DataLoader(close_test_data, config.test_bs, num_workers=os.cpu_count()//4)
+    open_testloader = DataLoader(open_test_data, config.test_bs, num_workers=os.cpu_count()//4)
 
     # 加载model
     logging.info(f'Load Model...')
@@ -94,7 +94,7 @@ def main(config: DictConfig):
                 # trainer.save_model_state(model, model_path)
                 torch.save(model.state_dict(), f"{model_path}/ep{epoch + 1}.pth")
                 # save_networks(net, model_path, file_name, criterion=criterion)
-    logging.info(f"End Training.Time:{time.time-start_time:.2}s")
+    logging.info(f"End Training.Time:{time.time()-start_time:.2}s")
     logging.info(f"Logging into {config.logdir}")
 # 加载评估器
 
