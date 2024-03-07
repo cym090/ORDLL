@@ -15,6 +15,10 @@ train_dataset:
   transform:
     - _target_: torchvision.transforms.Resize
       size: ${eval:"(${dataset.crop},${dataset.crop})"}
+    # -_target_:  torchvision.transforms.RandomHorizontalFlip,
+    #   : 0.2
+    #   transforms.RandomRotation(70),
+    #   transforms.RandomGrayscale(0.2),
       # interpolation:
       #   _target_: utils.transforms.interpolation
       #   _args_:

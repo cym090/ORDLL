@@ -3,7 +3,9 @@ defaults:
   # - /dataset: cifar10
   - /dataset: ISIC
   # - /dataset: Dermnet_Skin_Disease
-  - /backbone: resnet18_224
+  # - /backbone: resnet18_224
+  - /backbone: resnet101_224
+
   # - /backbone: resnet18_32
   # - /backbone: classifier32
   - /models: ORDL
