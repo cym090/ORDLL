@@ -1,4 +1,0 @@
-feat_dim: 128
-backbone:
-  _target_: models.backbone.classifier32.classifier32
-  num_classes: ${eval:"len(${dataset.known_class})"}
