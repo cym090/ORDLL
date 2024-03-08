@@ -8,7 +8,7 @@ from utils.logger import setup_logging, record_history
 import logging
 from utils.misc import AverageMeter
 from collections import defaultdict
-from test import test
+from utils.test import test
 import time
 from utils import io
 import yaml
@@ -70,7 +70,7 @@ def main(config: DictConfig):
         # 定期评估
         eval_now = (epoch == config.epochs + 1) or (config.neval != 0 and epoch % config.neval == 0)
         if eval_now:
-            results = test(model, criterion, close_testloader, open_testloader, config)
+            results, open_k_logits, open_u_logits= test(model, criterion, close_testloader, open_testloader, config, return_logits=True)
             record_history('test', {f"ep{epoch}":results}, config.logdir)
             if config['open_test'] == True:
                 open_results = results['open_out_metric']
@@ -94,6 +94,8 @@ def main(config: DictConfig):
                 os.makedirs(model_path, exist_ok=True)
                 # trainer.save_model_state(model, model_path)
                 torch.save(model.state_dict(), f"{model_path}/ep{epoch}.pth")
+                open_k_logits.tofile(f"{model_path}/open_k_logits.dat")
+                open_k_logits.tofile(f"{model_path}/open_u_logits.dat")
                 # save_networks(net, model_path, file_name, criterion=criterion)
     logging.info(f"End Training.Time:{time.time()-start_time:.2f}s")
     logging.info(f"Logging into {config.logdir}")
