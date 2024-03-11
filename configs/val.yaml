@@ -1,0 +1,14 @@
+close_data_dir: ??
+open_data_dir: ??
+model_path: ??
+test_bs: 64
+indicator: AUROC
+
+
+tag: ""
+# data_dir: ${work_dir}
+hydra:
+  run:
+    dir: ${work_dir}/logs/${hydra:runtime.choices.dataset}/${hydra:runtime.choices.models}_${epochs}/${tag}${seed}_${now:%y%m%d_%H%M%S_%f}
+  job:
+    chdir: False
