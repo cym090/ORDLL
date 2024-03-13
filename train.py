@@ -12,7 +12,7 @@ from utils.test import test
 import time
 from utils import io
 import yaml
-from utils.machine_stats import print_stats
+# from utils.machine_stats import print_stats
 from utils.engine import seeding
 
 @hydra.main(config_path="configs/", config_name="train.yaml", version_base=None)
@@ -94,10 +94,10 @@ def main(config: DictConfig):
                 os.makedirs(model_path, exist_ok=True)
                 # trainer.save_model_state(model, model_path)
                 torch.save(model.state_dict(), f"{model_path}/best.pth")
-                with open(model_path+f"/{config.indicator}_{indicator}",) as logtxt:
+                with open(model_path+f"/{config.indicator}_{indicator}","w") as logtxt:
                     pass
                 open_k_logits.tofile(f"{model_path}/open_k_logits.dat")
-                open_k_logits.tofile(f"{model_path}/open_u_logits.dat")
+                open_u_logits.tofile(f"{model_path}/open_u_logits.dat")
                 # save_networks(net, model_path, file_name, criterion=criterion)
     logging.info(f"End Training.Time:{time.time()-start_time:.2f}s")
     logging.info(f"Logging into {config.logdir}")
